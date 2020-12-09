@@ -1,24 +1,30 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-frontend
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      app: my-frontend
   template:
     metadata:
       labels:
-        run: my-frontend
+        app: my-frontend
     spec:
+      terminationGracePeriodSeconds: 120
       containers:
       - image: "f5devcentral/f5-demo-httpd:nginx"
         env:
         - name: F5DEMO_APP
-          value: "frontend"
-        - name: F5DEMO_BACKEND_URL
-          value: "http://my-backend/"
+          value: "website"
         imagePullPolicy: IfNotPresent
         name: my-frontend
         ports:
         - containerPort: 80
           protocol: TCP
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sleep","60"]
 

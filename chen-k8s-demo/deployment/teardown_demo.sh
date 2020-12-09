@@ -17,9 +17,9 @@ printf "##############################################\n"
 printf "Delete BACKEND\n"
 printf "##############################################\n\n\n"
 
-kubectl delete -f my-backend-deployment.yaml
+#kubectl delete -f my-backend-deployment.yaml
 
-kubectl delete -f my-backend-service.yaml
+#kubectl delete -f my-backend-service.yaml
 
 ##
 ## Replace kube-proxy with original kube-proxy
@@ -75,8 +75,9 @@ kubectl delete -f green-ingress-nginx.yaml
 kubectl delete -f node-blue.yaml
 kubectl delete -f node-green.yaml
 
-kubectl apply -f as3-configmap-empty.yaml
-
+#kubectl apply -f as3-configmap-empty.yaml
+kubectl label cm f5demo-as3-configmap as3=false --overwrite
+kubectl label cm nginx-as3-configmap as3=false --overwrite -n nginx-ingress
 ##
 ## Delete F5 BIG-IP CC
 ##
@@ -86,6 +87,8 @@ printf "Delete BIG-IP CC\n"
 printf "##############################################\n\n\n"
 sleep 30
 kubectl delete -f as3-configmap-empty.yaml
+kubectl delete cm f5demo-as3-configmap
+kubectl delete cm nginx-as3-configmap -n nginx-ingress
 kubectl delete -f f5-cc-deployment.yaml -n kube-system
 kubectl delete -f f5-cc-deployment2.yaml -n kube-system
 
@@ -96,19 +99,12 @@ kubectl delete -f f5-cc-deployment2.yaml -n kube-system
 kubectl delete -f nginx/ingress-nginx-service.yaml
 kubectl delete -f nginx/ingress-nginx-service-tls.yaml
 
-kubectl delete -f nginx/nginx-ingress.yaml
+kubectl delete -f nginx/nginx-ingress-helm.yaml
 sleep 30
-kubectl delete -f nginx/nginx-configuration-configmap.yaml
-kubectl delete -f nginx/nginx-config.yaml
 kubectl delete -f nginx/default-server-secret.yaml
-kubectl delete -f nginx/custom-resource-definitions.yaml
-
-kubectl delete -f nginx/rbac.yaml
-kubectl delete -f nginx/ns-and-sa.yaml
-
-
-
-
+kubectl delete -f nginx/crds
+kubectl delete -f nginx/appprotect-basic.yaml -n nginx-ingress
+kubectl delete -f nginx/appprotect-log.yaml -n nginx-ingress
 
 ##
 ## Delete BIG-IP kubectl secret
